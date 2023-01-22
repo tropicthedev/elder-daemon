@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "botler-daemon",
+  "version": "${version}",
+  "name": "Botler Daemon",
+  "description": "Botler daemon for integrating with Botler for premium users",
+  "authors": [
+    "Jordan McKoy"
+  ],
+  "contact": {
+    "website": "bitecodelabs.com",
+    "repo": "https://github.com/BiteCodeLabs/botler-daemon"
+  },
+  "license": "MIT",
+  "environment": "server",
+  "entrypoints": {
+    "main": [
+      "org.bitecodelabs.com.botlerdaemon.BotlerDaemon"
+    ],
+    "server": [
+      "org.bitecodelabs.com.botlerdaemon.BotlerDaemonServer"
+    ]
+  },
+  "mixins": [
+    "botler-daemon.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.13",
+    "fabric": "*",
+    "minecraft": "1.19.2"
+  }
+}
