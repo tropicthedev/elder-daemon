@@ -3,7 +3,14 @@ import io.socket.client.IO;
         import io.socket.client.Socket;
         import io.socket.emitter.Emitter;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.net.URISyntaxException;
+
+import org.bitecodelabs.com.botlerdaemon.config.Config;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SocketClient {
     private static SocketClient instance;
@@ -18,11 +25,8 @@ public class SocketClient {
 
     private SocketClient() {
 
-        String socketUrl = System.getenv("SOCKET_URL");
-        if (socketUrl == null) {
-            socketUrl = "http://localhost:3000";
-        }
         try {
+            String socketUrl = Config.BOTLER_WEBSOCKET_HOST;
             socket = IO.socket(socketUrl);
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
                 @Override
