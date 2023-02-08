@@ -2,7 +2,6 @@ package org.bitecodelabs.com.botlerdaemon;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import org.bitecodelabs.com.botlerdaemon.api.SocratesRequester;
 import org.bitecodelabs.com.botlerdaemon.event.PlayerLoginHandler;
 import org.bitecodelabs.com.botlerdaemon.event.PlayerLogoutHandler;
 import org.slf4j.Logger;
@@ -19,6 +18,5 @@ public class BotlerDaemon implements ModInitializer {
         ServerPlayConnectionEvents.JOIN.register((new PlayerLoginHandler()));
         ServerPlayConnectionEvents.DISCONNECT.register((new PlayerLogoutHandler()));
 
-        SocratesRequester.main();
     }
 }
