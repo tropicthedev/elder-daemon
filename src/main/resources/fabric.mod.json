@@ -15,10 +15,10 @@
   "environment": "server",
   "entrypoints": {
     "main": [
-      "org.bitecodelabs.com.botlerdaemon.BotlerDaemon"
+      "org.bitecodelabs.botlerdaemon.BotlerDaemon"
     ],
     "server": [
-      "org.bitecodelabs.com.botlerdaemon.BotlerDaemonServer"
+      "org.bitecodelabs.botlerdaemon.BotlerDaemonServer"
     ]
   },
   "mixins": [

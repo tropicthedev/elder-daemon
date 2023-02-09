@@ -1,20 +1,26 @@
 plugins {
     id 'fabric-loom' version '1.0.1'
     id 'maven-publish'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
 }
 
 version = project.mod_version
 group = project.maven_group
 
+
 repositories {
-    // Add repositories to retrieve artifacts from in here.
-    // You should only use this when depending on other mods because
-    // Loom adds the essential maven repositories to download Minecraft and libraries from automatically.
-    // See https://docs.gradle.org/current/userguide/declaring_repositories.html
-    // for more information about repositories.
+}
+
+configurations {
+    // Determines shaded dependencies
+    shade
+    developmentElements {
+        extendsFrom(implementation, namedElements)
+    }
 }
 
 dependencies {
+
     // To change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
@@ -23,8 +29,7 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    // Socket.IO Client  API
-    implementation ('io.socket:socket.io-client:2.1.0')
+    shade(implementation 'io.socket:socket.io-client:2.1.0')
 }
 
 processResources {
@@ -61,10 +66,47 @@ java {
 }
 
 jar {
+    manifest.attributes["Main-Class"] = "org.bitecodlabs.botlerdaemon.BotlerDaemon"
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+    // Store in temporary folder instead of outputting directly
+
+    destinationDirectory = file("${buildDir}/tmp/thinJar")
+}
+
+shadowJar {
+    // Only shade dependencies not provided by Minecraft/FAPI/FLoader
+    configurations = [project.configurations.shade]
+
+    //Exclude META-INF entries of shaded deps
+    exclude('META-INF/**', '**/*.pdn','**/*.bbmodel')
+
     from("LICENSE") {
         rename { "${it}_${project.archivesBaseName}" }
     }
 }
+
+prepareRemapJar {
+    dependsOn shadowJar
+}
+
+remapJar {
+    input = shadowJar.archiveFile
+}
+
+//task fatJar(type:Jar) {
+//    manifest {
+//        attributes(
+//                'Main-Class':"org.bitecodlabs.botlerdaemon.BotlerDaemon"
+//        )
+//    }
+//    from("LICENSE") {
+//        rename { "${it}_${project.archivesBaseName}" }
+//    }
+//    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+//    with jar
+//}
 
 // configure the maven publication
 publishing {

@@ -1,4 +1,4 @@
-package org.bitecodelabs.com.botlerdaemon.config;
+package org.bitecodelabs.botlerdaemon.config;
 
 // Adapted from https://github.com/RelativityMC/VMP-fabric
 
@@ -16,7 +16,9 @@ import java.util.Properties;
 public class Config {
 
     public static final String BOTLER_WEBSOCKET_HOST;
+
     public static final String BOTLER_API_TOKEN;
+    public static final String BOTLER_SERVER_NAME;
 
     static {
         final Properties properties = new Properties();
@@ -29,8 +31,9 @@ public class Config {
                 throw new RuntimeException(e);
             }
         }
-        BOTLER_WEBSOCKET_HOST = getString(properties, newProperties, "botler_websocket_host", "wss://localhost:3000");
+        BOTLER_WEBSOCKET_HOST = getString(properties, newProperties, "botler_websocket_host", "ws://localhost:3000");
         BOTLER_API_TOKEN = getString(properties, newProperties, "botler_api_token", "btler_falskdfjasdfja");
+        BOTLER_SERVER_NAME = getString(properties, newProperties, "botler_server_name", "Minecraft Server");
 
         try (OutputStream out = Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
             newProperties.store(out, "Configuration file for Botler Daemon");

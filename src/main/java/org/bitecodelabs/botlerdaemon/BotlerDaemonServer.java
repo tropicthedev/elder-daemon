@@ -1,4 +1,4 @@
-package org.bitecodelabs.com.botlerdaemon;
+package org.bitecodelabs.botlerdaemon;
 
 import net.fabricmc.api.DedicatedServerModInitializer;
 

@@ -1,10 +1,10 @@
-package org.bitecodelabs.com.botlerdaemon.event;
+package org.bitecodelabs.botlerdaemon.event;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
-import org.bitecodelabs.com.botlerdaemon.BotlerDaemon;
-import org.bitecodelabs.com.botlerdaemon.websocket.SocketClient;
+import org.bitecodelabs.botlerdaemon.BotlerDaemon;
+import org.bitecodelabs.botlerdaemon.websocket.SocketClient;
 
 public class PlayerLogoutHandler implements ServerPlayConnectionEvents.Disconnect {
     @Override

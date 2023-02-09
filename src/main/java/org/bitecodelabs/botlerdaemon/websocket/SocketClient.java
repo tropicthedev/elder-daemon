@@ -1,26 +1,24 @@
-package org.bitecodelabs.com.botlerdaemon.websocket;
+package org.bitecodelabs.botlerdaemon.websocket;
 import io.socket.client.IO;
         import io.socket.client.Socket;
         import io.socket.emitter.Emitter;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+
 import java.net.URISyntaxException;
 
-import org.bitecodelabs.com.botlerdaemon.config.Config;
-import org.json.JSONException;
-import org.json.JSONObject;
+import org.bitecodelabs.botlerdaemon.config.Config;
+
 
 public class SocketClient {
     private static SocketClient instance;
     private Socket socket;
-
     public enum Events {
         BOTLER_SERVER_MEMBER_JOIN,
         BOTLER_SERVER_MEMBER_LEAVE,
         BOTLER_SERVER_MEMBER_BAN,
-        BOTLER_SERVER_MEMBER_KICK
+        BOTLER_SERVER_MEMBER_KICK,
+        BOTLER_SERVER_START
+
     }
 
     private SocketClient() {
@@ -55,7 +53,7 @@ public class SocketClient {
 
     public void emitEvent(String eventName, String data) {
         socket.emit(eventName, data);
-    }
+    };
 
 }
 
