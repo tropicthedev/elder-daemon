@@ -7,12 +7,13 @@ import org.bitecodelabs.botlerdaemon.BotlerDaemon;
 import org.bitecodelabs.botlerdaemon.config.Config;
 import org.bitecodelabs.botlerdaemon.websocket.SocketClient;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerLogoutHandler implements ServerPlayConnectionEvents.Disconnect {
-    public static Map<String, String> createPlayerLeaveEvent(String memberId, String serverId, String mcServerId, String sessionEnd) {
-        Map<String, String> playerLeaveEvent = new HashMap<>();
+    public static Map<String, Object> createPlayerLeaveEvent(String memberId, String serverId, String mcServerId, BigInteger sessionEnd) {
+        Map<String, Object> playerLeaveEvent = new HashMap<>();
         playerLeaveEvent.put("member_id", memberId);
         playerLeaveEvent.put("server_id", serverId);
         playerLeaveEvent.put("mc_server_id", mcServerId);
@@ -25,11 +26,11 @@ public class PlayerLogoutHandler implements ServerPlayConnectionEvents.Disconnec
         final String player_uuid = handler.getPlayer().getUuidAsString();
         final String server_id = Config.BOTLER_DISCORD_SERVER_ID;
         final String mc_server_id = Config.BOTLER_MC_SERVER_ID;
-        final String session_end = String.valueOf(System.currentTimeMillis());
+        final BigInteger session_end = BigInteger.valueOf(System.currentTimeMillis());
 
         SocketClient socketClient = SocketClient.getInstance();
 
-        Map<String, String> data = createPlayerLeaveEvent(player_uuid, server_id, mc_server_id, session_end);
+        Map<String, Object> data = createPlayerLeaveEvent(player_uuid, server_id, mc_server_id, session_end);
 
         socketClient.emitPlayerEvent(String.valueOf(SocketClient.Events.BOTLER_SERVER_MEMBER_JOIN), data);
         BotlerDaemon.LOGGER.info(handler.getPlayer().getUuidAsString() + " Has left the server");

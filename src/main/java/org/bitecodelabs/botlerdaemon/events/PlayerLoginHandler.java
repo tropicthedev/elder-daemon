@@ -8,13 +8,14 @@ import org.bitecodelabs.botlerdaemon.BotlerDaemon;
 import org.bitecodelabs.botlerdaemon.config.Config;
 import org.bitecodelabs.botlerdaemon.websocket.SocketClient;
 
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
 public class PlayerLoginHandler implements ServerPlayConnectionEvents.Join {
 
-    public static Map<String, String> createPlayerJoinEvent(String memberId, String serverId, String mcServerId, String sessionStart) {
-        Map<String, String> playerJoinEvent = new HashMap<>();
+    public static Map<String, Object> createPlayerJoinEvent(String memberId, String serverId, String mcServerId, BigInteger sessionStart) {
+        Map<String, Object> playerJoinEvent = new HashMap<>();
         playerJoinEvent.put("member_id", memberId);
         playerJoinEvent.put("server_id", serverId);
         playerJoinEvent.put("mc_server_id", mcServerId);
@@ -29,11 +30,11 @@ public class PlayerLoginHandler implements ServerPlayConnectionEvents.Join {
         final String player_uuid = handler.getPlayer().getUuidAsString();
         final String server_id = Config.BOTLER_DISCORD_SERVER_ID;
         final String mc_server_id = Config.BOTLER_MC_SERVER_ID;
-        final String session_start = String.valueOf(System.currentTimeMillis());
+        final BigInteger session_start = BigInteger.valueOf(System.currentTimeMillis());
 
         SocketClient socketClient = SocketClient.getInstance();
 
-        Map<String, String> data = createPlayerJoinEvent(player_uuid, server_id, mc_server_id, session_start);
+        Map<String, Object> data = createPlayerJoinEvent(player_uuid, server_id, mc_server_id, session_start);
 
         socketClient.emitPlayerEvent(String.valueOf(SocketClient.Events.BOTLER_SERVER_MEMBER_JOIN), data);
 

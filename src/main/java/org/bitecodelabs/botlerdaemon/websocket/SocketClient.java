@@ -64,7 +64,7 @@ public class SocketClient {
     public void emitEvent(String eventName, String data) {
         socket.emit(eventName, data);
     };
-    public void emitPlayerEvent(String eventName, Map<String, String> data) {
+    public void emitPlayerEvent(String eventName, Map<String, Object> data) {
         socket.emit(eventName, data);
     };
 
