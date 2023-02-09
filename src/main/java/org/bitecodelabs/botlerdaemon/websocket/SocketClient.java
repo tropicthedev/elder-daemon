@@ -5,8 +5,12 @@ import io.socket.client.IO;
 
 
 import java.net.URISyntaxException;
+import java.util.Map;
 
+import org.bitecodelabs.botlerdaemon.BotlerDaemon;
 import org.bitecodelabs.botlerdaemon.config.Config;
+
+import static java.util.Collections.singletonMap;
 
 
 public class SocketClient {
@@ -17,25 +21,31 @@ public class SocketClient {
         BOTLER_SERVER_MEMBER_LEAVE,
         BOTLER_SERVER_MEMBER_BAN,
         BOTLER_SERVER_MEMBER_KICK,
-        BOTLER_SERVER_START
-
+        BOTLER_SERVER_START,
+        BOTLER_SERVER_BOOT,
+        BOTLER_SERVER_SHUTDOWN
     }
 
     private SocketClient() {
 
         try {
             String socketUrl = Config.BOTLER_WEBSOCKET_HOST;
-            socket = IO.socket(socketUrl);
+
+            IO.Options options = IO.Options.builder()
+                    .setAuth(Config.BOTLER_CREDENTIALS)
+                    .build();
+
+            socket = IO.socket(socketUrl,options);
             socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("Connected");
+                    BotlerDaemon.LOGGER.info("Connected");
                     socket.emit("message", "Hello from Java client");
                 }
             }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
                 @Override
                 public void call(Object... args) {
-                    System.out.println("Disconnected");
+                    BotlerDaemon.LOGGER.info("Disconnected from botler....ensure that your api token is valid");
                 }
             });
             socket.connect();
@@ -54,6 +64,10 @@ public class SocketClient {
     public void emitEvent(String eventName, String data) {
         socket.emit(eventName, data);
     };
+    public void emitPlayerEvent(String eventName, Map<String, String> data) {
+        socket.emit(eventName, data);
+    };
+
 
 }
 
