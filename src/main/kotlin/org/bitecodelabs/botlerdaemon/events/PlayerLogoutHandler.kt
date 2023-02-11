@@ -1,13 +1,14 @@
 package org.bitecodelabs.botlerdaemon.events
 
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 import net.minecraft.server.MinecraftServer
 import net.minecraft.server.network.ServerPlayNetworkHandler
-import org.bitecodelabs.botlerdaemon.BotlerDaemon
+import org.bitecodelabs.botlerdaemon.Daemon.Companion.LOGGER
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
 
 class PlayerLogoutHandler : ServerPlayConnectionEvents.Disconnect {
+    //TODO Create an API caller to end sessions
     override fun onPlayDisconnect(handler: ServerPlayNetworkHandler, server: MinecraftServer) {
 
-        BotlerDaemon.LOGGER.info(handler.getPlayer().uuidAsString + " Has left the server")
+        LOGGER.info(handler.getPlayer().uuidAsString + " Has left the server")
     }
 }

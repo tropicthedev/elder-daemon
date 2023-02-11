@@ -8,14 +8,14 @@
     "Jordan McKoy"
   ],
   "contact": {
-    "website": "bitecodelabs.com",
+    "website": "https://bitecodelabs.com",
     "repo": "https://github.com/BiteCodeLabs/botler-daemon"
   },
   "license": "MIT",
   "environment": "server",
   "entrypoints": {
     "server": [
-      "org.bitecodelabs.botlerdaemon.BotlerDaemon"
+      "org.bitecodelabs.botlerdaemon.Daemon"
     ]
   },
   "mixins": [
