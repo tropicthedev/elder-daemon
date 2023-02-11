@@ -1,31 +1,26 @@
-package org.bitecodelabs.botlerdaemon;
+package org.bitecodelabs.botlerdaemon
 
-import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import org.bitecodelabs.botlerdaemon.events.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import net.fabricmc.api.DedicatedServerModInitializer
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents
+import org.bitecodelabs.botlerdaemon.connections.SocketClient
+import org.bitecodelabs.botlerdaemon.events.PlayerLoginHandler
+import org.bitecodelabs.botlerdaemon.events.PlayerLogoutHandler
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
-public class BotlerDaemon implements ModInitializer {
+class BotlerDaemon : DedicatedServerModInitializer {
 
-    public static final String MOD_ID = "Botler Daemon";
-    public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
-    @Override
-    public void onInitialize() {
+    private val socketClient = SocketClient()
+    override fun onInitializeServer() {
+        LOGGER.info("Starting Botler Daemon")
+        socketClient.setup()
+        ServerPlayConnectionEvents.JOIN.register(PlayerLoginHandler())
+        ServerPlayConnectionEvents.DISCONNECT.register(PlayerLogoutHandler())
+    }
 
-        BotlerDaemon.LOGGER.info("Starting Botler Daemon");
-
-        ServerPlayConnectionEvents.JOIN.register((new PlayerLoginHandler()));
-
-        ServerPlayConnectionEvents.DISCONNECT.register((new PlayerLogoutHandler()));
-
-        ServerLifecycleEvents.SERVER_STARTED.register((new ServerStartHandler()));
-
-        ServerLifecycleEvents.SERVER_STARTING.register((new ServerStartingHandler()));
-
-        ServerLifecycleEvents.SERVER_STOPPED.register((new ServerShutdownHandler()));
-
-
+    companion object {
+        private const val MOD_ID = "Botler Daemon"
+        @JvmField
+        var LOGGER: Logger = LoggerFactory.getLogger(MOD_ID)
     }
 }

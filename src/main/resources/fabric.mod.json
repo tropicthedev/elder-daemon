@@ -14,14 +14,12 @@
   "license": "MIT",
   "environment": "server",
   "entrypoints": {
-    "main": [
-      "org.bitecodelabs.botlerdaemon.BotlerDaemon"
-    ],
     "server": [
-      "org.bitecodelabs.botlerdaemon.BotlerDaemonServer"
+      "org.bitecodelabs.botlerdaemon.BotlerDaemon"
     ]
   },
   "mixins": [
+    "botlerdaemon.mixin.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.13",
