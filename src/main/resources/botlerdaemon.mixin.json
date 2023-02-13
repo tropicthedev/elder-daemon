@@ -4,8 +4,7 @@
   "package": "org.bitecodelabs.botlerdaemon.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "BanCommandMixin",
-    "BanIpCommandMixin"
+    "BanCommandMixin"
   ],
   "injectors": {
     "defaultRequire": 1

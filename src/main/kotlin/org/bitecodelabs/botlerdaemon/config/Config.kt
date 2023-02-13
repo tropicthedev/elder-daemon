@@ -8,9 +8,24 @@ import net.fabricmc.loader.api.FabricLoader
 
 object Config {
 
-    var BOTLER_API_TOKEN: String? = null
+    var BOTLER_API_TOKEN: String
 
-    var BOTLER_WEBSOCKET_HOST: String? = null
+    var BOTLER_SERVER_ID: String
+
+    var BOTLER_GUILD_ID: String
+
+    var HOST: String
+
+    enum class SocketEvents(val event: String) {
+        BOTLER_MEMBER_ADD("BOTLER_SERVER_MEMBER_ADD"),
+        BOTLER_MEMBER_ADD_SUCCESS("BOTLER_MEMBER_ADD_SUCCESS"),
+        BOTLER_MEMBER_REMOVE("BOTLER_SERVER_MEMBER_REMOVE"),
+        BOTLER_MEMBER_REMOVE_SUCCESS("BOTLER_MEMBER_REMOVE_SUCCESS"),
+        BOTLER_MEMBER_BAN("BOTLER_SERVER_MEMBER_BAN"),
+        BOTLER_MEMBER_BAN_SUCCESS("BOTLER_SERVER_MEMBER_BAN_SUCCESS"),
+        DAEMON_MEMBER_BAN("DAEMON_SERVER_MEMBER_BAN"),
+        DAEMON_MEMBER_BAN_SUCCESS("DAEMON_SERVER_MEMBER_BAN"),
+    }
 
     init {
 
@@ -32,9 +47,13 @@ object Config {
 
             }
         }
-        BOTLER_WEBSOCKET_HOST = getString(properties, newProperties, "botler_websocket_host", "ws://localhost:3000")
+        HOST = getString(properties, newProperties, "botler_host", "ws://localhost:3000")
 
         BOTLER_API_TOKEN = getString(properties, newProperties, "botler_api_token", "insert_api_token_here")
+
+        BOTLER_SERVER_ID = getString(properties, newProperties, "botler_server_id", "insert_server_id_here")
+
+        BOTLER_GUILD_ID = getString(properties, newProperties, "botler_guild_id", "insert_guild_id_here")
 
         try {
 
