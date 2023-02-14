@@ -4,17 +4,19 @@ import com.mojang.authlib.GameProfile;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.minecraft.server.*;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Text;
 import org.bitecodelabs.botlerdaemon.Daemon;
+import org.bitecodelabs.botlerdaemon.command.WhitelistAddCommand;
+import org.bitecodelabs.botlerdaemon.command.WhitelistRemoveCommand;
+import org.bitecodelabs.botlerdaemon.command.BanCommand;
 import org.bitecodelabs.botlerdaemon.config.Config;
-import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
 
 public class SocketClient {
+
+    Command command;
     private static SocketClient instance;
     private Socket socket;
 
@@ -42,123 +44,81 @@ public class SocketClient {
 
             socket.on(String.valueOf(Config.SocketEvents.DAEMON_MEMBER_BAN_SUCCESS), args -> {
 
-                MojangUser data = convertToData(args);
-
-                if (data != null) {
-                    Daemon.LOGGER.info(data.name() + " banned from discord through minecraft server");
-                }
             });
 
             socket.on(Config.SocketEvents.BOTLER_MEMBER_ADD.getEvent(), args -> {
 
-                MojangUser data = convertToData(args);
+                for (Object arg : args) {
 
-                if (data != null) {
+                    try {
+                        JSONObject json = new JSONObject(arg.toString());
 
-                    GameProfile gameProfile = new GameProfile(data.uuid(), data.name());
+                        String id = (String) json.get("id");
 
-                    Whitelist whitelist = server.getPlayerManager().getWhitelist();
+                        String name = (String) json.get("name");
 
-                    if (!whitelist.isAllowed(gameProfile)) {
+                        UUID uuid = UUID.fromString(id);
 
-                        WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
+                        GameProfile gameProfile = new GameProfile(uuid, name);
 
-                        whitelist.add(whitelistEntry);
+                        SocketClient.instance.setCommand(new WhitelistAddCommand());
 
-                        try {
+                        SocketClient.instance.executeCommand(gameProfile, server);
 
-                            emitSuccessEvent(String.valueOf(Config.SocketEvents.BOTLER_MEMBER_ADD_SUCCESS), gameProfile.getId());
-
-                        } catch (JSONException e) {
-
-                            Daemon.LOGGER.error(e.getMessage());
-
-                            return;
-                        }
-
-                        Daemon.LOGGER.info("Member " + data.name() + " has been added to the whitelist");
+                    } catch (Exception e) {
+                        Daemon.LOGGER.error(e.getMessage());
                     }
                 }
             });
 
             socket.on(Config.SocketEvents.BOTLER_MEMBER_REMOVE.getEvent(), args -> {
 
-                MojangUser data = convertToData(args);
+                for (Object arg : args) {
+                    try{
+                        JSONObject json = new JSONObject(arg.toString());
 
-                if (data != null) {
+                        String id = (String) json.get("id");
 
-                    GameProfile gameProfile = new GameProfile(data.uuid(), data.name());
+                        String name = (String) json.get("name");
 
-                    Whitelist whitelist = server.getPlayerManager().getWhitelist();
+                        UUID uuid = UUID.fromString(id);
 
-                    if (!whitelist.isAllowed(gameProfile)) {
+                        GameProfile gameProfile = new GameProfile(uuid, name);
 
-                        WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
+                        SocketClient.instance.setCommand(new WhitelistRemoveCommand());
 
-                        whitelist.remove(whitelistEntry);
+                        SocketClient.instance.executeCommand(gameProfile, server);
 
-                        try {
-
-                            emitSuccessEvent(String.valueOf(Config.SocketEvents.BOTLER_MEMBER_REMOVE_SUCCESS), gameProfile.getId());
-
-                        } catch (JSONException e) {
-
-                            Daemon.LOGGER.error(e.getMessage());
-
-                            return;
-
-                        }
-
-                        Daemon.LOGGER.info("Member " + data.name() + " has been removed from the whitelist");
+                    } catch (Exception e) {
+                        Daemon.LOGGER.error(e.getMessage());
                     }
                 }
             });
 
             socket.on(Config.SocketEvents.BOTLER_MEMBER_BAN.getEvent(), args -> {
 
-                MojangUser data = convertToData(new List[]{Arrays.asList(args)});
+                for (Object arg : args) {
 
-            if (data != null) {
+                    try{
+                        JSONObject json = new JSONObject(arg.toString());
 
-                BannedPlayerList bannedPlayerList = server.getPlayerManager().getUserBanList();
+                        String id = (String) json.get("id");
 
-                GameProfile gameProfile = new GameProfile(data.uuid(), data.name());
+                        String name = (String) json.get("name");
 
-                if (bannedPlayerList.contains(gameProfile)) {
-                    Daemon.LOGGER.info(gameProfile.getName() + " is already banned");
-                } else {
+                        UUID uuid = UUID.fromString(id);
 
-                    BannedPlayerEntry bannedPlayerEntry = new BannedPlayerEntry(
-                            gameProfile,
-                            null,
-                            null,
-                            null,
-                            data.reason()
-                    );
+                        GameProfile gameProfile = new GameProfile(uuid, name);
 
-                    bannedPlayerList.add(bannedPlayerEntry);
+                        SocketClient.instance.setCommand(new BanCommand());
 
-                    ServerPlayerEntity serverPlayerEntity = server.getPlayerManager().getPlayer(gameProfile.getId());
+                         SocketClient.instance.executeCommand(gameProfile, server);
 
-                    if (serverPlayerEntity != null) {
-
-                        serverPlayerEntity.networkHandler.disconnect(Text.translatable("multiplayer.disconnect.banned"));
-
-                    }
-
-                    try {
-
-                        emitSuccessEvent(String.valueOf(Config.SocketEvents.BOTLER_MEMBER_BAN_SUCCESS), gameProfile.getId());
-
-                    } catch (JSONException e) {
-
+                    } catch (Exception e) {
                         Daemon.LOGGER.error(e.getMessage());
                     }
-
-                    Daemon.LOGGER.info(gameProfile.getName() + " has been banned for reason: " + data.reason());
                 }
-            }
-        });
+            });
 
         } catch (Exception e) {
 
@@ -166,6 +126,18 @@ public class SocketClient {
 
         }
 
+    }
+
+    public void setCommand(Command command) {
+        this.command = command;
+    }
+
+    public void executeCommand(GameProfile gameProfile, MinecraftServer server) {
+        try {
+            command.execute(gameProfile, server);
+        } catch (Exception e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
     }
 
     public static SocketClient getInstance(MinecraftServer parameter) {
@@ -179,53 +151,39 @@ public class SocketClient {
         return instance;
     }
 
-    private record MojangUser(String name, UUID uuid, @Nullable String reason) {
-
-        @Override
-        public String reason() {
-
-            return reason;
-            }
-        }
-
-    private MojangUser convertToData(Object[] array) {
-
-        Object element = array[1];
-
-        try {
-
-            return new MojangUser((String) array[0], UUID.fromString((String) element), (String) array[2]);
-
-        } catch (Exception e) {
-
-            return null;
-        }
-    }
-
-    private void emitSuccessEvent(String eventName, UUID player) throws JSONException {
+    public void emitSuccessEvent(String eventName, UUID player) {
 
         JSONObject json = new JSONObject();
 
-        json.put("guildId", Config.BOTLER_GUILD_ID);
+        try {
+            json.put("guildId", Config.BOTLER_GUILD_ID);
 
-        json.put("serverId", Config.BOTLER_SERVER_ID);
+            json.put("serverId", Config.BOTLER_SERVER_ID);
 
-        json.put("playerId", player);
+            json.put("playerId", player);
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
 
         socket.emit(eventName, json);
     }
 
-    public void emitBanEvent(String eventName, String player, String reason) throws JSONException {
+    public void emitBanEvent(String eventName, String player, String reason)  {
 
         JSONObject json = new JSONObject();
 
-        json.put("guildId", Config.BOTLER_GUILD_ID);
+        try {
+            json.put("guildId", Config.BOTLER_GUILD_ID);
 
-        json.put("serverId", Config.BOTLER_SERVER_ID);
+            json.put("serverId", Config.BOTLER_SERVER_ID);
 
-        json.put("playerId", player);
+            json.put("playerId", player);
 
-        json.put("reason", reason);
+            json.put("reason", reason);
+
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
 
         socket.emit(eventName, json);
     }

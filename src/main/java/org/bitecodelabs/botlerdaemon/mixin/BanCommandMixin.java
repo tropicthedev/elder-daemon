@@ -4,7 +4,6 @@ import java.util.Collection;
 import net.minecraft.text.Text;
 import com.mojang.authlib.GameProfile;
 import org.bitecodelabs.botlerdaemon.config.Config;
-import org.json.JSONException;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -23,11 +22,7 @@ public abstract class BanCommandMixin {
 
         for (GameProfile gameProfile : targets) {
 
-            try {
-                socketClient.emitBanEvent(Config.SocketEvents.DAEMON_MEMBER_BAN.getEvent(), gameProfile.getId().toString(), String.valueOf(reason));
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+            socketClient.emitBanEvent(Config.SocketEvents.DAEMON_MEMBER_BAN.getEvent(), gameProfile.getId().toString(), String.valueOf(reason));
 
         }
     }

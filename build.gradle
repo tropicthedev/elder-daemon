@@ -25,7 +25,9 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
+    // External Dependencies
     shade(implementation 'io.socket:socket.io-client:2.1.0')
+    shade(implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2')
 }
 
 processResources {
