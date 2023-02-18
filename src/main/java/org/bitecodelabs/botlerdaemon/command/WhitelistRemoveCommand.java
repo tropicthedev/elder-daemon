@@ -1,10 +1,10 @@
 package org.bitecodelabs.botlerdaemon.command;
 
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
 import org.bitecodelabs.botlerdaemon.Daemon;
+import net.minecraft.server.MinecraftServer;
 import org.bitecodelabs.botlerdaemon.connections.Command;
 
 public class WhitelistRemoveCommand implements Command {
