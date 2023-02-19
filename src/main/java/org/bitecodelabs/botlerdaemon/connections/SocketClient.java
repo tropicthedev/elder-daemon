@@ -26,11 +26,9 @@ public class SocketClient {
 
             String socketUrl = Config.HOST;
 
-            Map<String, String> auth = new HashMap<>();
+            IO.Options options = new IO.Options();
 
-            auth.put("token", Config.BOTLER_API_TOKEN);
-
-            IO.Options options = IO.Options.builder().setAuth(auth).build();
+            options.query = "guildId=" + Config.BOTLER_GUILD_ID + "&serverId=" + Config.BOTLER_SERVER_ID + "&token=" + Config.BOTLER_API_TOKEN;
 
             socket = IO.socket(socketUrl, options);
 
