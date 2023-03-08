@@ -1,15 +1,15 @@
-package org.bitecodelabs.botlerdaemon.command;
+package com.github.tropicdev.elderdaemon.command;
 
+import com.github.tropicdev.elderdaemon.Daemon;
+import com.github.tropicdev.elderdaemon.config.Config;
+import com.github.tropicdev.elderdaemon.connections.Command;
+import com.github.tropicdev.elderdaemon.connections.SocketClient;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.BannedPlayerEntry;
 import net.minecraft.server.BannedPlayerList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
-import org.bitecodelabs.botlerdaemon.Daemon;
-import org.bitecodelabs.botlerdaemon.config.Config;
-import org.bitecodelabs.botlerdaemon.connections.Command;
-import org.bitecodelabs.botlerdaemon.connections.SocketClient;
 
 public class BanCommand implements Command {
 
@@ -20,6 +20,9 @@ public class BanCommand implements Command {
             BannedPlayerList bannedPlayerList = server.getPlayerManager().getUserBanList();
 
             if (bannedPlayerList.contains(gameProfile)) {
+                String msg = gameProfile.getName() + " is already banned";
+
+                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
                 Daemon.LOGGER.info(gameProfile.getName() + " is already banned");
             } else {
 
@@ -41,13 +44,19 @@ public class BanCommand implements Command {
 
                 }
 
-                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.BOTLER_MEMBER_BAN_SUCCESS), gameProfile.getId());
+                String msg = gameProfile.getName() + " Has been Banned From The Server";
+
+                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, true);
 
                 Daemon.LOGGER.info(gameProfile.getName() + " has been banned ");
             }
 
         } catch (Exception e) {
             Daemon.LOGGER.error(e.getMessage());
+
+            String msg = gameProfile.getName() + " Could Not Be Banned From The Server";
+
+            SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
         }
     }
 }

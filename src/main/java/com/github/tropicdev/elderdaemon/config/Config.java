@@ -1,4 +1,4 @@
-package org.bitecodelabs.botlerdaemon.config;
+package com.github.tropicdev.elderdaemon.config;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -9,20 +9,18 @@ import java.util.Properties;
 import net.fabricmc.loader.api.FabricLoader;
 
 public class Config {
-    public static String BOTLER_API_TOKEN;
-    public static String BOTLER_SERVER_ID;
-    public static String BOTLER_GUILD_ID;
+    public static String API_TOKEN;
+    public static String SERVER_ID;
     public static String HOST;
 
     public enum SocketEvents {
-        BOTLER_MEMBER_ADD("BOTLER_SERVER_MEMBER_ADD"),
-        BOTLER_MEMBER_ADD_SUCCESS("BOTLER_MEMBER_ADD_SUCCESS"),
-        BOTLER_MEMBER_REMOVE("BOTLER_SERVER_MEMBER_REMOVE"),
-        BOTLER_MEMBER_REMOVE_SUCCESS("BOTLER_MEMBER_REMOVE_SUCCESS"),
-        BOTLER_MEMBER_BAN("BOTLER_SERVER_MEMBER_BAN"),
-        BOTLER_MEMBER_BAN_SUCCESS("BOTLER_SERVER_MEMBER_BAN_SUCCESS"),
-        DAEMON_MEMBER_BAN("DAEMON_SERVER_MEMBER_BAN"),
-        DAEMON_MEMBER_BAN_SUCCESS("DAEMON_SERVER_MEMBER_BAN");
+        GUARDIAN_MEMBER_BAN("GUARDIAN:MEMBER_BAN"),
+        GUARDIAN_MEMBER_LEAVE("GUARDIAN:MEMBER_LEAVE"),
+        GUARDIAN_MEMBER_ADD("GUARDIAN:MEMBER_ADD"),
+        ELDER_MEMBER_BAN("ELDER:MEMBER_BAN"),
+        ELDER_MEMBER_SESSION_START("ELDER:MEMBER_SESSION_START"),
+        ELDER_MEMBER_SESSION_END("ELDER:MEMBER_SESSION_END"),
+        SUCCESS("SUCCESS");
 
         private final String event;
 
@@ -48,10 +46,9 @@ public class Config {
             }
         }
 
-        HOST = getString(properties, newProperties, "botler_host", "ws://localhost:3000");
-        BOTLER_API_TOKEN = getString(properties, newProperties, "botler_api_token", "insert_api_token_here");
-        BOTLER_SERVER_ID = getString(properties, newProperties, "botler_server_id", "insert_server_id_here");
-        BOTLER_GUILD_ID = getString(properties, newProperties, "botler_guild_id", "insert_guild_id_here");
+        HOST = getString(properties, newProperties, "api_host", "ws://localhost:3000");
+        API_TOKEN = getString(properties, newProperties, "api_token", "insert_api_token_here");
+        SERVER_ID = getString(properties, newProperties, "server_id", "insert_server_id_here");
 
         try {
             newProperties.store(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING),

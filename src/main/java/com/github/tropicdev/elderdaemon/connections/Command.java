@@ -1,4 +1,4 @@
-package org.bitecodelabs.botlerdaemon.connections;
+package com.github.tropicdev.elderdaemon.connections;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.MinecraftServer;

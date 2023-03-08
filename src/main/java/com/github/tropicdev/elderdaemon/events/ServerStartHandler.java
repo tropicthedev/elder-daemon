@@ -1,9 +1,9 @@
-package org.bitecodelabs.botlerdaemon.events;
+package com.github.tropicdev.elderdaemon.events;
 
+import com.github.tropicdev.elderdaemon.Daemon;
+import com.github.tropicdev.elderdaemon.connections.SocketClient;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.minecraft.server.MinecraftServer;
-import org.bitecodelabs.botlerdaemon.Daemon;
-import org.bitecodelabs.botlerdaemon.connections.SocketClient;
 
 public class ServerStartHandler implements ServerLifecycleEvents.ServerStarted {
     @Override

@@ -1,13 +1,13 @@
-package org.bitecodelabs.botlerdaemon;
+package com.github.tropicdev.elderdaemon;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import net.fabricmc.api.DedicatedServerModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
-import org.bitecodelabs.botlerdaemon.events.PlayerLoginHandler;
-import org.bitecodelabs.botlerdaemon.events.PlayerLogoutHandler;
-import org.bitecodelabs.botlerdaemon.events.ServerStartHandler;
+import com.github.tropicdev.elderdaemon.events.PlayerLoginHandler;
+import com.github.tropicdev.elderdaemon.events.PlayerLogoutHandler;
+import com.github.tropicdev.elderdaemon.events.ServerStartHandler;
 
 public class Daemon implements DedicatedServerModInitializer  {
     private static final String MOD_ID = "Botler Daemon";

@@ -1,18 +1,20 @@
-package org.bitecodelabs.botlerdaemon.connections;
+package com.github.tropicdev.elderdaemon.connections;
 
+import com.github.tropicdev.elderdaemon.Daemon;
+import com.github.tropicdev.elderdaemon.config.Config;
 import com.mojang.authlib.GameProfile;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import net.minecraft.server.*;
-import org.bitecodelabs.botlerdaemon.Daemon;
-import org.bitecodelabs.botlerdaemon.command.WhitelistAddCommand;
-import org.bitecodelabs.botlerdaemon.command.WhitelistRemoveCommand;
-import org.bitecodelabs.botlerdaemon.command.BanCommand;
-import org.bitecodelabs.botlerdaemon.config.Config;
+import com.github.tropicdev.elderdaemon.command.WhitelistAddCommand;
+import com.github.tropicdev.elderdaemon.command.WhitelistRemoveCommand;
+import com.github.tropicdev.elderdaemon.command.BanCommand;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
+
+import static java.util.Collections.singletonMap;
 
 public class SocketClient {
 
@@ -26,11 +28,9 @@ public class SocketClient {
 
             String socketUrl = Config.HOST;
 
-            IO.Options options = new IO.Options();
+            IO.Options options = IO.Options.builder().setAuth(singletonMap("token", Config.API_TOKEN)).build();
 
-            options.query = "guildId=" + Config.BOTLER_GUILD_ID + "&serverId=" + Config.BOTLER_SERVER_ID + "&token=" + Config.BOTLER_API_TOKEN;
-
-            socket = IO.socket(socketUrl, options);
+            Socket socket = IO.socket(socketUrl, options);
 
             socket.connect();
 
@@ -40,11 +40,28 @@ public class SocketClient {
 
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> Daemon.LOGGER.error(Arrays.toString(args)));
 
-            socket.on(String.valueOf(Config.SocketEvents.DAEMON_MEMBER_BAN_SUCCESS), args -> {
+            socket.on(String.valueOf(Config.SocketEvents.SUCCESS), args -> {
+                for (Object arg : args) {
+                    try {
+                        JSONObject json = new JSONObject(arg.toString());
 
+                        Boolean success = (Boolean) json.get("success");
+
+                        String msg = (String) json.get("msg");
+
+                        if (success) {
+                            Daemon.LOGGER.info(msg);
+                        } else {
+                            Daemon.LOGGER.warn(msg);
+                        }
+
+                    } catch (Exception e) {
+                        Daemon.LOGGER.error(e.getMessage());
+                    }
+                }
             });
 
-            socket.on(Config.SocketEvents.BOTLER_MEMBER_ADD.getEvent(), args -> {
+            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_ADD.getEvent(), args -> {
 
                 for (Object arg : args) {
 
@@ -69,7 +86,7 @@ public class SocketClient {
                 }
             });
 
-            socket.on(Config.SocketEvents.BOTLER_MEMBER_REMOVE.getEvent(), args -> {
+            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_LEAVE.getEvent(), args -> {
 
                 for (Object arg : args) {
                     try{
@@ -93,7 +110,7 @@ public class SocketClient {
                 }
             });
 
-            socket.on(Config.SocketEvents.BOTLER_MEMBER_BAN.getEvent(), args -> {
+            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_BAN.getEvent(), args -> {
 
                 for (Object arg : args) {
 
@@ -138,6 +155,76 @@ public class SocketClient {
         }
     }
 
+    public void emitSuccessEvent(String eventName, String message, Boolean bool) {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("success", bool);
+
+            json.put("server_id", Config.SERVER_ID);
+
+            json.put("msg", message);
+
+            socket.emit(eventName, json);
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
+
+    }
+
+    public void emitBanEvent(String eventName, String player, String reason)  {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("mojang_id", player);
+
+            json.put("reason", reason);
+
+            socket.emit(eventName, json);
+
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
+
+    }
+
+    public void emitJoinEvent(String eventName, String player)  {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("mojang_id", player);
+
+            json.put("server_id", Config.SERVER_ID);
+
+            socket.emit(eventName, json);
+
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
+
+    }
+
+
+    public void emitLeaveEvent(String eventName, String player)  {
+
+        JSONObject json = new JSONObject();
+
+        try {
+            json.put("mojang_id", player);
+
+            json.put("server_id", Config.SERVER_ID);
+
+            socket.emit(eventName, json);
+
+        } catch (JSONException e) {
+            Daemon.LOGGER.error(e.getMessage());
+        }
+
+    }
+
     public static SocketClient getInstance(MinecraftServer parameter) {
 
         if (instance == null) {
@@ -147,42 +234,5 @@ public class SocketClient {
         }
 
         return instance;
-    }
-
-    public void emitSuccessEvent(String eventName, UUID player) {
-
-        JSONObject json = new JSONObject();
-
-        try {
-            json.put("guildId", Config.BOTLER_GUILD_ID);
-
-            json.put("serverId", Config.BOTLER_SERVER_ID);
-
-            json.put("playerId", player);
-        } catch (JSONException e) {
-            Daemon.LOGGER.error(e.getMessage());
-        }
-
-        socket.emit(eventName, json);
-    }
-
-    public void emitBanEvent(String eventName, String player, String reason)  {
-
-        JSONObject json = new JSONObject();
-
-        try {
-            json.put("guildId", Config.BOTLER_GUILD_ID);
-
-            json.put("serverId", Config.BOTLER_SERVER_ID);
-
-            json.put("playerId", player);
-
-            json.put("reason", reason);
-
-        } catch (JSONException e) {
-            Daemon.LOGGER.error(e.getMessage());
-        }
-
-        socket.emit(eventName, json);
     }
 }

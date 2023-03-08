@@ -1,11 +1,13 @@
-package org.bitecodelabs.botlerdaemon.command;
+package com.github.tropicdev.elderdaemon.command;
 
+import com.github.tropicdev.elderdaemon.Daemon;
+import com.github.tropicdev.elderdaemon.config.Config;
+import com.github.tropicdev.elderdaemon.connections.Command;
+import com.github.tropicdev.elderdaemon.connections.SocketClient;
 import com.mojang.authlib.GameProfile;
 import net.minecraft.server.Whitelist;
 import net.minecraft.server.WhitelistEntry;
-import org.bitecodelabs.botlerdaemon.Daemon;
 import net.minecraft.server.MinecraftServer;
-import org.bitecodelabs.botlerdaemon.connections.Command;
 
 public class WhitelistAddCommand implements Command {
 
@@ -21,13 +23,23 @@ public class WhitelistAddCommand implements Command {
 
                 whitelist.add(whitelistEntry);
 
+                String msg = gameProfile.getName() + " was added to the whitelist";
+
+                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, true);
+
                 Daemon.LOGGER.info("Member " + gameProfile.getName() + " has been added to the whitelist");
 
             } else {
+                String msg = gameProfile.getName() + " could not be added to the whitelist";
+
+                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
                 Daemon.LOGGER.error("Member " + gameProfile.getName() + " could not be added to the whitelist");
             }
 
         } catch (Exception e) {
+            String msg = gameProfile.getName() + " could not be added to the whitelist";
+
+            SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
             Daemon.LOGGER.error(e.getMessage());
         }
     }

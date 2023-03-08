@@ -1,25 +1,25 @@
 {
   "schemaVersion": 1,
-  "id": "botler-daemon",
+  "id": "elder-daemon",
   "version": "${version}",
-  "name": "Botler Daemon",
-  "description": "Botler daemon for integrating with Botler for premium users",
+  "name": "Elder Daemon",
+  "description": "Elder daemon for integrating with Guardian for premium users",
   "authors": [
     "Jordan McKoy"
   ],
   "contact": {
-    "website": "https://bitecodelabs.com",
-    "repo": "https://github.com/BiteCodeLabs/botler-daemon"
+    "website": "https://jmckoy.com",
+    "repo": "https://github.com/tropicdev/elder-daemon"
   },
   "license": "MIT",
   "environment": "server",
   "entrypoints": {
     "server": [
-      "org.bitecodelabs.botlerdaemon.Daemon"
+      "com.github.tropicdev.elderdaemon.Daemon"
     ]
   },
   "mixins": [
-    "botlerdaemon.mixin.json"
+    "elderdaemon.mixin.json"
   ],
   "depends": {
     "fabricloader": ">=0.14.13",
