@@ -30,7 +30,7 @@ public class SocketClient {
 
             IO.Options options = IO.Options.builder().setAuth(singletonMap("token", Config.API_TOKEN)).build();
 
-            Socket socket = IO.socket(socketUrl, options);
+            socket = IO.socket(socketUrl, options);
 
             socket.connect();
 
