@@ -25,6 +25,8 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           tag_name: v1.0.0  # Replace with the tag name for the release
           release_name: Release v1.0.0  # Replace with the name of the release
@@ -32,4 +34,3 @@ jobs:
             First release !
           draft: false
           prerelease: false
-          token: ${{ secrets.GITHUB_TOKEN }}
