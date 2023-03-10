@@ -16,7 +16,7 @@ public class PlayerLogoutHandler implements ServerPlayConnectionEvents.Disconnec
 
         try {
 
-            socketClient.emitLeaveEvent(String.valueOf(Config.SocketEvents.ELDER_MEMBER_SESSION_END), handler.getPlayer().getUuidAsString());
+            socketClient.emitLeaveEvent(handler.getPlayer().getUuidAsString());
 
             Daemon.LOGGER.info(handler.getPlayer().getUuidAsString() + " Has joined the server");
 

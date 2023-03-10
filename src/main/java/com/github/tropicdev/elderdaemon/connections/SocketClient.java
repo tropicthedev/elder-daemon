@@ -9,12 +9,13 @@ import net.minecraft.server.*;
 import com.github.tropicdev.elderdaemon.command.WhitelistAddCommand;
 import com.github.tropicdev.elderdaemon.command.WhitelistRemoveCommand;
 import com.github.tropicdev.elderdaemon.command.BanCommand;
+import net.minecraft.text.Text;
+import org.jetbrains.annotations.Nullable;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.net.URISyntaxException;
 import java.util.*;
-
-import static java.util.Collections.singletonMap;
 
 public class SocketClient {
 
@@ -28,19 +29,31 @@ public class SocketClient {
 
             String socketUrl = Config.HOST;
 
-            IO.Options options = IO.Options.builder().setAuth(singletonMap("token", Config.API_TOKEN)).build();
+            Map<String, String> authParams = new HashMap<>();
+            authParams.put("token", Config.API_TOKEN);
+            authParams.put("server_id", Config.SERVER_ID);
+
+            IO.Options options = IO.Options.builder()
+                    .setAuth(authParams)
+                    .setReconnection(true)
+                    .setReconnectionAttempts(20)
+                    .setReconnectionDelay(1_000)
+                    .setReconnectionDelayMax(5_000)
+                    .setRandomizationFactor(0.5)
+                    .setTimeout(20_000)
+                    .build();
 
             socket = IO.socket(socketUrl, options);
 
             socket.connect();
 
-            socket.on(Socket.EVENT_CONNECT, args -> Daemon.LOGGER.info("Connected"));
+            socket.on(Socket.EVENT_CONNECT, args -> Daemon.LOGGER.info("Connected to guardian"));
 
-            socket.on(Socket.EVENT_DISCONNECT, args -> Daemon.LOGGER.info("Disconnected from botler socket"));
+            socket.on(Socket.EVENT_DISCONNECT, args -> Daemon.LOGGER.info("Disconnected from guardian"));
 
             socket.on(Socket.EVENT_CONNECT_ERROR, args -> Daemon.LOGGER.error(Arrays.toString(args)));
 
-            socket.on(String.valueOf(Config.SocketEvents.SUCCESS), args -> {
+            socket.on("success", args -> {
                 for (Object arg : args) {
                     try {
                         JSONObject json = new JSONObject(arg.toString());
@@ -61,7 +74,7 @@ public class SocketClient {
                 }
             });
 
-            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_ADD.getEvent(), args -> {
+            socket.on("add", args -> {
 
                 for (Object arg : args) {
 
@@ -86,7 +99,7 @@ public class SocketClient {
                 }
             });
 
-            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_LEAVE.getEvent(), args -> {
+            socket.on("leave", args -> {
 
                 for (Object arg : args) {
                     try{
@@ -110,7 +123,7 @@ public class SocketClient {
                 }
             });
 
-            socket.on(Config.SocketEvents.GUARDIAN_MEMBER_BAN.getEvent(), args -> {
+            socket.on("ban", args -> {
 
                 for (Object arg : args) {
 
@@ -127,7 +140,7 @@ public class SocketClient {
 
                         SocketClient.instance.setCommand(new BanCommand());
 
-                         SocketClient.instance.executeCommand(gameProfile, server);
+                        SocketClient.instance.executeCommand(gameProfile, server);
 
                     } catch (Exception e) {
                         Daemon.LOGGER.error(e.getMessage());
@@ -135,12 +148,11 @@ public class SocketClient {
                 }
             });
 
-        } catch (Exception e) {
+        } catch (URISyntaxException e) {
 
             Daemon.LOGGER.error(e.getMessage());
-
+            Daemon.LOGGER.warn("Guardian is disconnected");
         }
-
     }
 
     public void setCommand(Command command) {
@@ -155,7 +167,7 @@ public class SocketClient {
         }
     }
 
-    public void emitSuccessEvent(String eventName, String message, Boolean bool) {
+    public void emitSuccessEvent(String message, Boolean bool) {
 
         JSONObject json = new JSONObject();
 
@@ -166,31 +178,33 @@ public class SocketClient {
 
             json.put("msg", message);
 
-            socket.emit(eventName, json);
+            socket.emit("success", json);
         } catch (JSONException e) {
             Daemon.LOGGER.error(e.getMessage());
         }
 
     }
 
-    public void emitBanEvent(String eventName, String player, String reason)  {
+    public void emitBanEvent(GameProfile player, @Nullable Text reason)  {
 
         JSONObject json = new JSONObject();
 
         try {
-            json.put("mojang_id", player);
+            json.put("id", player.getId().toString());
+
+            json.put("name", player.getName());
 
             json.put("reason", reason);
 
-            socket.emit(eventName, json);
-
         } catch (JSONException e) {
             Daemon.LOGGER.error(e.getMessage());
         }
 
+        socket.emit("ban", json);
+
     }
 
-    public void emitJoinEvent(String eventName, String player)  {
+    public void emitJoinEvent( String player)  {
 
         JSONObject json = new JSONObject();
 
@@ -199,7 +213,7 @@ public class SocketClient {
 
             json.put("server_id", Config.SERVER_ID);
 
-            socket.emit(eventName, json);
+            socket.emit("session-start", json);
 
         } catch (JSONException e) {
             Daemon.LOGGER.error(e.getMessage());
@@ -208,7 +222,7 @@ public class SocketClient {
     }
 
 
-    public void emitLeaveEvent(String eventName, String player)  {
+    public void emitLeaveEvent( String player)  {
 
         JSONObject json = new JSONObject();
 
@@ -217,13 +231,17 @@ public class SocketClient {
 
             json.put("server_id", Config.SERVER_ID);
 
-            socket.emit(eventName, json);
+            socket.emit("session-end", json);
 
         } catch (JSONException e) {
             Daemon.LOGGER.error(e.getMessage());
         }
 
     }
+
+    public void closeInstance() {
+       socket.close();
+    };
 
     public static SocketClient getInstance(MinecraftServer parameter) {
 
@@ -235,4 +253,6 @@ public class SocketClient {
 
         return instance;
     }
+
+
 }

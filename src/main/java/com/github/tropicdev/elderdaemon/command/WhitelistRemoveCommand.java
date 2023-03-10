@@ -17,7 +17,7 @@ public class WhitelistRemoveCommand implements Command {
         try {
             Whitelist whitelist = server.getPlayerManager().getWhitelist();
 
-            if (!whitelist.isAllowed(gameProfile)) {
+            if (whitelist.isAllowed(gameProfile)) {
 
                 WhitelistEntry whitelistEntry = new WhitelistEntry(gameProfile);
 
@@ -25,14 +25,14 @@ public class WhitelistRemoveCommand implements Command {
 
                 String msg = gameProfile.getName() + " has been removed from the whitelist";
 
-                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, true);
+                SocketClient.getInstance(server).emitSuccessEvent(msg, true);
 
                 Daemon.LOGGER.info("Member " + gameProfile.getName() + " has been removed from the whitelist");
 
             } else {
                 String msg = gameProfile.getName() + " could not be removed from the whitelist";
 
-                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
+                SocketClient.getInstance(server).emitSuccessEvent(msg, false);
 
                 Daemon.LOGGER.error("Member " + gameProfile.getName() + " could not be removed from the whitelist");
             }
@@ -40,7 +40,7 @@ public class WhitelistRemoveCommand implements Command {
         } catch (Exception e) {
             String msg = gameProfile.getName() + " could not be removed from the whitelist";
 
-            SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
+            SocketClient.getInstance(server).emitSuccessEvent(msg, false);
             Daemon.LOGGER.error(e.getMessage());
         }
     }

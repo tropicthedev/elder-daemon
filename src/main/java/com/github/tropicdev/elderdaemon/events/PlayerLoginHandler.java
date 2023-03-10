@@ -17,7 +17,7 @@ public class PlayerLoginHandler implements ServerPlayConnectionEvents.Join {
 
         try {
 
-            socketClient.emitJoinEvent(String.valueOf(Config.SocketEvents.ELDER_MEMBER_SESSION_START), handler.getPlayer().getUuidAsString());
+            socketClient.emitJoinEvent(handler.getPlayer().getUuidAsString());
 
             Daemon.LOGGER.info(handler.getPlayer().getUuidAsString() + " Has joined the server");
 

@@ -22,7 +22,7 @@ public class BanCommand implements Command {
             if (bannedPlayerList.contains(gameProfile)) {
                 String msg = gameProfile.getName() + " is already banned";
 
-                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
+                SocketClient.getInstance(server).emitSuccessEvent(msg, false);
                 Daemon.LOGGER.info(gameProfile.getName() + " is already banned");
             } else {
 
@@ -46,7 +46,7 @@ public class BanCommand implements Command {
 
                 String msg = gameProfile.getName() + " Has been Banned From The Server";
 
-                SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, true);
+                SocketClient.getInstance(server).emitSuccessEvent(msg, true);
 
                 Daemon.LOGGER.info(gameProfile.getName() + " has been banned ");
             }
@@ -56,7 +56,7 @@ public class BanCommand implements Command {
 
             String msg = gameProfile.getName() + " Could Not Be Banned From The Server";
 
-            SocketClient.getInstance(server).emitSuccessEvent(String.valueOf(Config.SocketEvents.SUCCESS), msg, false);
+            SocketClient.getInstance(server).emitSuccessEvent(msg, false);
         }
     }
 }

@@ -13,30 +13,10 @@ public class Config {
     public static String SERVER_ID;
     public static String HOST;
 
-    public enum SocketEvents {
-        GUARDIAN_MEMBER_BAN("GUARDIAN:MEMBER_BAN"),
-        GUARDIAN_MEMBER_LEAVE("GUARDIAN:MEMBER_LEAVE"),
-        GUARDIAN_MEMBER_ADD("GUARDIAN:MEMBER_ADD"),
-        ELDER_MEMBER_BAN("ELDER:MEMBER_BAN"),
-        ELDER_MEMBER_SESSION_START("ELDER:MEMBER_SESSION_START"),
-        ELDER_MEMBER_SESSION_END("ELDER:MEMBER_SESSION_END"),
-        SUCCESS("SUCCESS");
-
-        private final String event;
-
-        SocketEvents(String event) {
-            this.event = event;
-        }
-
-        public String getEvent() {
-            return event;
-        }
-    }
-
     static {
         Properties properties = new Properties();
         Properties newProperties = new Properties();
-        Path path = FabricLoader.getInstance().getConfigDir().resolve("botler.properties");
+        Path path = FabricLoader.getInstance().getConfigDir().resolve("elder.properties");
 
         if (Files.isRegularFile(path)) {
             try {
@@ -52,7 +32,7 @@ public class Config {
 
         try {
             newProperties.store(Files.newOutputStream(path, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING),
-                    "Configuration file for Botler Daemon");
+                    "Configuration file for Elder Daemon");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
