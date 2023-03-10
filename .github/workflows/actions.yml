@@ -1,6 +1,9 @@
 name: Minecraft Mod Build
 
-on: [push]
+on:
+  push:
+    branches:
+      - main
 
 jobs:
   build:
@@ -13,21 +16,20 @@ jobs:
         with:
           java-version: '17'
           distribution: 'adopt'
-      - name: Build with Gradle
-        uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
-        with:
-          arguments: build
 
-      - name: Build Mod with Gradle
-        run: ./gradlew build
+      - name: Build with Gradle
+        uses: gradle/gradle-build-action@v1.5.0
+        with:
+          tasks: build
+
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v1.0.0  # Replace with the tag name for the release
           release_name: Release v1.0.0  # Replace with the name of the release
           body: |
             First release !
           draft: false
           prerelease: false
+          token: ${{ secrets.GITHUB_TOKEN }}
