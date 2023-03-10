@@ -23,9 +23,8 @@ jobs:
       - name: Create Release
         id: create_release
         uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
           tag_name: v1.0.0  # Replace with the tag name for the release
           release_name: Release v1.0.0  # Replace with the name of the release
           body: |
