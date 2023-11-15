@@ -1,4 +1,4 @@
-Documentation coming soon =)
+DEPRICATED visit [here](https://github.com/tropic-oss/guardian-mod/)
 
 ## License
 
